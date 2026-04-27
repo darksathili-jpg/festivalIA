@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Exposition interactive et participative — L'IA Crée, Mais Qui Décide ? — Lycée Antoine Watteau, Valenciennes. Semaine de l'IA, Festival Hauts-de-France, juin 2026.">
+<meta name="author" content="Élèves de Première NSI — Lycée Antoine Watteau">
+<title>L'IA Crée — Mais Qui Décide ? | Lycée Antoine Watteau</title>
+
+<!-- Polices de caractères -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   VARIABLES — PALETTE WATTEAU
+   Ors du XVIIIe, azurs profonds, ombres chaudes
+================================================================ */
+:root {
+  --or:           #C9A84C;
+  --or-clair:     #E8D5A3;
+  --or-pale:      #F5EDD6;
+  --azur:         #4A6B8A;
+  --azur-prof:    #2C4A6A;
+  --ivoire:       #FDF6E3;
+  --parchemin:    #F0E6C8;
+  --ombre:        #3D2B1F;
+  --ombre-med:    #6B4C3B;
+  --vert-fete:    #5C7A4E;
+  --rose-robe:    #C47E8A;
+  --bordeaux:     #7A2D3E;
+  --alerte:       #E07A3A;
+
+  --serif-titre:  'Cinzel', serif;
+  --serif-corps:  'Cormorant Garamond', serif;
+  --serif-fell:   'IM Fell English', serif;
+
+  --duree-anim:   0.75s;
+  --easing:       cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ================================================================
+   RÉINITIALISATION & BASE
+================================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--ombre);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(74,107,138,0.12) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  font-family: var(--serif-corps);
+  color: var(--ivoire);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Curseur personnalisé */
+body { cursor: crosshair; }
+a, button, [role="button"] { cursor: pointer; }
+
+/* ================================================================
+   ORNEMENTS SVG
+================================================================ */
+.ornement-svg {
+  display: block;
+  margin: 0 auto;
+  opacity: 0.7;
+}
+
+/* ================================================================
+   BANNIÈRE D'ACCESSIBILITÉ — NAVIGATION AU CLAVIER
+================================================================ */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--or);
+  color: var(--ombre);
+  font-family: var(--serif-titre);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 1rem; }
+
+/* ================================================================
+   HERO — SCÈNE D'OUVERTURE
+================================================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  overflow: hidden;
+}
+
+/* Fond en particules dorées animées */
+.hero-particules {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particule {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--or);
+  border-radius: 50%;
+  opacity: 0;
+  animation: float-particule var(--duree, 8s) ease-in-out infinite;
+  animation-delay: var(--delai, 0s);
+}
+
+@keyframes float-particule {
+  0%   { opacity: 0; transform: translateY(100vh) scale(0); }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-10vh) scale(1.5); }
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(44,74,106,0.3) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Cadre doré à double bord */
+.hero-cadre {
+  position: relative;
+  margin-bottom:50px;
+  border: 1px solid rgba(201,168,76,0.45);
+  padding: 3rem 4rem;
+  max-width: 920px;
+  width: 100%;
+  background: rgba(61,43,31,0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: apparition-cadre 1.4s var(--easing) both;
+}
+
+@keyframes apparition-cadre {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.hero-cadre::before,
+.hero-cadre::after {
+  content: '';
+  position: absolute;
+  border: 1px solid rgba(201,168,76,0.22);
+  inset: 8px;
+  pointer-events: none;
+}
+.hero-cadre::after {
+  inset: 14px;
+  border-color: rgba(201,168,76,0.1);
+}
+
+/* Coins décoratifs */
+.coin {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  opacity: 0.85;
+}
+.coin-tl { top: -1px;    left: -1px;   }
+.coin-tr { top: -1px;    right: -1px;  transform: scaleX(-1); }
+.coin-bl { bottom: -1px; left: -1px;   transform: scaleY(-1); }
+.coin-br { bottom: -1px; right: -1px;  transform: scale(-1);  }
+
+.hero-festival {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+  animation: apparition-cadre 1.6s var(--easing) 0.2s both;
+}
+
+.hero-titre {
+  font-family: var(--serif-fell);
+  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+  font-weight:lighter;
+  font-style: italic;
+  line-height: 1.12;
+  color: var(--or-pale);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 24px rgba(201,168,76,0.3);
+  animation: apparition-cadre 1.6s var(--easing) 0.35s both;
+}
+
+.hero-sous-titre {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.9rem, 2.2vw, 1.5rem);
+  font-weight: 500;
+  color: var(--or);
+  letter-spacing: 0.12em;
+  margin-bottom: 2rem;
+  animation: apparition-cadre 1.6s var(--easing) 0.5s both;
+}
+
+.hero-desc {
+  font-family: var(--serif-corps);
+  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  line-height: 1.9;
+  color: var(--or-clair);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  font-weight: 300;
+  animation: apparition-cadre 1.6s var(--easing) 0.65s both;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  font-family: var(--serif-titre);
+  font-size: clamp(0.6rem, 1vw, 0.68rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: 0.78;
+  animation: apparition-cadre 1.6s var(--easing) 0.8s both;
+}
+
+.hero-meta span::before { content: '— '; }
+
+/* Indicateur de défilement */
+.scroll-cta {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--serif-titre);
+  font-size: clamp(0.5rem, 1vw, 0.58rem);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: 0.55;
+  animation: pulsation 3s ease-in-out infinite;
+}
+
+.scroll-fleche {
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(to bottom, var(--or), transparent);
+  animation: descente 2.2s ease-in-out infinite;
+}
+
+@keyframes pulsation {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.75; }
+}
+
+@keyframes descente {
+  0%   { transform: scaleY(0); transform-origin: top; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ================================================================
+   SÉPARATEUR ROCOCO
+================================================================ */
+.separateur {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 3rem 2rem;
+  color: var(--or);
+  opacity: 0.5;
+  role: presentation;
+}
+
+.sep-ligne {
+  flex: 1;
+  max-width: 220px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--or), transparent);
+}
+
+.sep-motif {
+  font-size: 1rem;
+  letter-spacing: 0.6em;
+}
+
+/* ================================================================
+   BANDEAU D'AVERTISSEMENT RGPD — STAND D
+================================================================ */
+.bandeau-rgpd {
+  background: linear-gradient(135deg, rgba(224,122,58,0.12) 0%, rgba(122,45,62,0.1) 100%);
+  border: 1px solid rgba(224,122,58,0.35);
+  border-left: 3px solid var(--alerte);
+  padding: 1rem 1.5rem;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: var(--or-clair);
+  line-height: 1.65;
+}
+
+.bandeau-rgpd strong {
+  font-family: var(--serif-titre);
+  font-size: 0.58rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--alerte);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+/* ================================================================
+   SECTION INTRODUCTION — CONTEXTE PÉDAGOGIQUE
+================================================================ */
+.intro-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+  text-align: center;
+}
+
+.section-label {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.6rem, 1vw, 0.65rem);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: 0.72;
+  margin-bottom: 1.5rem;
+}
+
+.intro-texte {
+  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  line-height: 1.95;
+  color: var(--or-clair);
+  font-weight: 300;
+  font-style: italic;
+}
+
+.intro-texte strong {
+  font-weight: 500;
+  font-style: normal;
+  color: var(--or);
+}
+
+/* Trois piliers */
+.piliers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.pilier {
+  border: 1px solid rgba(201,168,76,0.28);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: rgba(201,168,76,0.04);
+  position: relative;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.pilier:hover {
+  border-color: rgba(201,168,76,0.55);
+  background: rgba(201,168,76,0.08);
+}
+
+.pilier-titre {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.6rem, 1vw, 0.72rem);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.75rem;
+}
+
+.pilier-desc {
+  font-size: clamp(0.88rem, 1.5vw, 0.97rem);
+  line-height: 1.75;
+  color: var(--or-clair);
+  font-weight: 300;
+}
+
+/* ================================================================
+   STANDS — GALERIE
+================================================================ */
+.stands-section {
+  padding: 2rem 2rem 6rem;
+}
+
+.stands-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.stands-titre {
+  font-family: var(--serif-fell);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-style: italic;
+  color: var(--or-pale);
+  margin: 1rem 0 0.5rem;
+}
+
+.stands-sous {
+  font-family: var(--serif-corps);
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  color: var(--or-clair);
+  font-weight: 300;
+  max-width: 600px;
+  margin: 0 auto;
+  opacity: 0.82;
+}
+
+.stands-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Carte stand */
+.stand-carte {
+  position: relative;
+  border: 1px solid rgba(201,168,76,0.3);
+  background: linear-gradient(135deg,
+    rgba(61,43,31,0.85) 0%,
+    rgba(44,74,106,0.2) 100%
+  );
+  padding: 0;
+  overflow: hidden;
+  transition: transform 0.45s var(--easing), box-shadow 0.45s var(--easing);
+  /* Effet de parallaxe au survol via JS */
+}
+
+.stand-carte:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(201,168,76,0.5),
+    inset 0 1px 0 rgba(201,168,76,0.1);
+}
+
+/* Couleur d'accent par lettre de stand */
+.stand-carte[data-stand="A"] { --accent: #C9A84C; }
+.stand-carte[data-stand="B"] { --accent: #4A6B8A; }
+.stand-carte[data-stand="C"] { --accent: #5C7A4E; }
+.stand-carte[data-stand="D"] { --accent: #C47E8A; }
+.stand-carte[data-stand="E"] { --accent: #7A2D3E; }
+.stand-carte[data-stand="F"] { --accent: #8A6B2A; }
+
+/* Bande de couleur supérieure avec animation de chargement */
+.stand-bande {
+  height: 4px;
+  background: var(--accent);
+  opacity: 0.85;
+  position: relative;
+  overflow: hidden;
+}
+
+.stand-bande::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+  animation: reflet-bande 3s ease-in-out infinite;
+}
+
+@keyframes reflet-bande {
+  0%   { left: -100%; }
+  60%  { left: 150%; }
+  100% { left: 150%; }
+}
+
+.stand-corps {
+  padding: 2rem 2rem 1.5rem;
+}
+
+.stand-entete {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stand-badge {
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif-titre);
+  font-size: 1.15rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.stand-carte:hover .stand-badge {
+  background: rgba(var(--accent), 0.12);
+}
+
+.stand-etiquette { flex: 1; }
+
+.stand-numero {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.5rem, 0.9vw, 0.58rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.75;
+  margin-bottom: 0.3rem;
+}
+
+.stand-titre {
+  font-family: var(--serif-fell);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  font-style: italic;
+  color: var(--or-pale);
+  line-height: 1.2;
+}
+
+/* Deux colonnes : l'IA fait / le visiteur fait */
+.stand-colonnes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stand-col {
+  background: rgba(0,0,0,0.22);
+  padding: 1rem;
+  border-left: 2px solid var(--accent);
+}
+
+.stand-col-label {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.48rem, 0.85vw, 0.52rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  opacity: 0.85;
+}
+
+.stand-col-texte {
+  font-size: clamp(0.88rem, 1.5vw, 0.97rem);
+  line-height: 1.65;
+  color: var(--or-clair);
+  font-weight: 300;
+}
+
+/* Notions NSI */
+.stand-nsi {
+  border-top: 1px solid rgba(201,168,76,0.15);
+  padding-top: 1.2rem;
+}
+
+.stand-nsi-label {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.48rem, 0.85vw, 0.52rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: 0.65;
+  margin-bottom: 0.5rem;
+}
+
+.stand-nsi-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.48rem, 0.85vw, 0.52rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.65rem;
+  border: 1px solid rgba(201,168,76,0.32);
+  color: var(--or-clair);
+  opacity: 0.85;
+  transition: border-color 0.2s, opacity 0.2s;
+}
+
+.stand-carte:hover .tag {
+  border-color: rgba(201,168,76,0.55);
+  opacity: 1;
+}
+
+/* Bouton de déploiement */
+.stand-toggle {
+  display: block;
+  width: 100%;
+  padding: 0.85rem;
+  margin-top: 1rem;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.22);
+  color: var(--or);
+  font-family: var(--serif-titre);
+  font-size: clamp(0.5rem, 0.9vw, 0.58rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, letter-spacing 0.3s;
+}
+
+.stand-toggle:hover,
+.stand-toggle:focus-visible {
+  background: rgba(201,168,76,0.16);
+  border-color: rgba(201,168,76,0.55);
+  letter-spacing: 0.55em;
+  outline: none;
+}
+
+.stand-toggle:focus-visible {
+  box-shadow: 0 0 0 2px var(--or);
+}
+
+/* Zone dépliable */
+.stand-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.55s var(--easing), opacity 0.35s ease;
+  opacity: 0;
+  background: rgba(0,0,0,0.32);
+  border-top: 0 solid rgba(201,168,76,0.15);
+}
+
+.stand-detail.ouvert {
+  max-height: 1200px;
+  opacity: 1;
+  border-top-width: 1px;
+  padding: 1.5rem 2rem;
+}
+
+.detail-section {
+  margin-bottom: 1.5rem;
+}
+
+.detail-titre {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.55rem, 0.95vw, 0.62rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: 0.75;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(201,168,76,0.18);
+}
+
+.detail-texte {
+  font-size: clamp(0.88rem, 1.5vw, 0.97rem);
+  line-height: 1.78;
+  color: var(--or-clair);
+  font-weight: 300;
+}
+
+.detail-liste {
+  list-style: none;
+  padding: 0;
+}
+
+.detail-liste li {
+  font-size: clamp(0.88rem, 1.5vw, 0.97rem);
+  line-height: 1.75;
+  color: var(--or-clair);
+  font-weight: 300;
+  padding-left: 1.4rem;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.detail-liste li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--accent);
+  transform: rotate(45deg);
+}
+
+.detail-question {
+  background: rgba(201,168,76,0.06);
+  border-left: 2px solid var(--accent);
+  padding: 0.8rem 1.1rem;
+  margin: 0.5rem 0;
+  font-style: italic;
+  font-size: clamp(0.9rem, 1.55vw, 0.98rem);
+  color: var(--or-pale);
+  line-height: 1.65;
+}
+
+.detail-outils {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.outil-badge {
+  background: rgba(74,107,138,0.2);
+  border: 1px solid rgba(74,107,138,0.42);
+  padding: 0.32rem 0.75rem;
+  font-family: var(--serif-titre);
+  font-size: clamp(0.48rem, 0.85vw, 0.52rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8db8d8;
+}
+
+/* ================================================================
+   SECTION COMPÉTENCES NSI
+================================================================ */
+.competences-section {
+  background: rgba(201,168,76,0.04);
+  border-top: 1px solid rgba(201,168,76,0.15);
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+  padding: 4rem 2rem;
+}
+
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 2.5rem auto 0;
+}
+
+.comp-carte {
+  border: 1px solid rgba(201,168,76,0.22);
+  padding: 1.5rem;
+  background: rgba(61,43,31,0.52);
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.comp-carte:hover {
+  border-color: rgba(201,168,76,0.5);
+  transform: translateY(-3px);
+}
+
+.comp-theme {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.58rem, 1vw, 0.65rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(201,168,76,0.22);
+}
+
+.comp-liste {
+  list-style: none;
+  padding: 0;
+}
+
+.comp-liste li {
+  font-size: clamp(0.85rem, 1.45vw, 0.93rem);
+  line-height: 1.75;
+  color: var(--or-clair);
+  font-weight: 300;
+  padding-left: 1.1rem;
+  position: relative;
+  margin-bottom: 0.25rem;
+}
+
+.comp-liste li::before {
+  content: '\2014'; /* tiret cadratin */
+  position: absolute;
+  left: 0;
+  color: var(--or);
+  opacity: 0.5;
+}
+
+/* ================================================================
+   RÉTROPLANNING
+================================================================ */
+.planning-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 2rem 6rem;
+}
+
+.planning-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.planning-titre {
+  font-family: var(--serif-fell);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-style: italic;
+  color: var(--or-pale);
+  margin: 1rem 0;
+}
+
+/* Ligne temporelle */
+.timeline {
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--or), rgba(201,168,76,0.15));
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 2.5rem 2rem;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 0.45rem;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--or);
+  background: var(--ombre);
+  transform: rotate(45deg);
+  transition: background 0.3s;
+}
+
+.timeline-item:hover::before {
+  background: rgba(201,168,76,0.25);
+}
+
+.timeline-date {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.52rem, 0.95vw, 0.58rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: 0.75;
+  margin-bottom: 0.45rem;
+}
+
+.timeline-titre {
+  font-family: var(--serif-fell);
+  font-size: clamp(1rem, 1.75vw, 1.15rem);
+  font-style: italic;
+  color: var(--or-pale);
+  margin-bottom: 0.45rem;
+}
+
+.timeline-desc {
+  font-size: clamp(0.88rem, 1.5vw, 0.97rem);
+  line-height: 1.65;
+  color: var(--or-clair);
+  font-weight: 300;
+}
+
+/* ================================================================
+   PIED DE PAGE
+================================================================ */
+footer {
+  text-align: center;
+  padding: 3.5rem 2rem;
+  border-top: 1px solid rgba(201,168,76,0.15);
+}
+
+.footer-lycee {
+  font-family: var(--serif-titre);
+  font-size: clamp(0.55rem, 0.95vw, 0.62rem);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: 0.52;
+}
+
+/* ================================================================
+   BARRE DE PROGRESSION DE LECTURE
+================================================================ */
+.barre-lecture {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--or), var(--azur));
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 1000;
+  transition: transform 0.1s linear;
+}
+
+/* ================================================================
+   RESPONSIVITÉ
+================================================================ */
+@media (max-width: 700px) {
+  .hero-cadre      { padding: 2rem 1.5rem; }
+  .piliers         { grid-template-columns: 1fr; }
+  .stands-grille   { grid-template-columns: 1fr; }
+  .stand-colonnes  { grid-template-columns: 1fr; }
+  .comp-grid       { grid-template-columns: 1fr; }
+  .hero-meta       { flex-direction: column; gap: 0.5rem; }
+  .stands-section  { padding: 2rem 1rem 4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .particule { display: none; }
+}
+
+/* ================================================================
+   ANIMATIONS D'ENTRÉE AU DÉFILEMENT
+================================================================ */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duree-anim) var(--easing),
+              transform var(--duree-anim) var(--easing);
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Décalage progressif pour les grilles */
+.fade-up:nth-child(2) { transition-delay: 0.08s; }
+.fade-up:nth-child(3) { transition-delay: 0.16s; }
+.fade-up:nth-child(4) { transition-delay: 0.24s; }
+.fade-up:nth-child(5) { transition-delay: 0.32s; }
+.fade-up:nth-child(6) { transition-delay: 0.40s; }
+</style>
+</head>
+<body>
+
+<!-- Lien d'accès rapide pour la navigation au clavier -->
+<a href="#contenu-principal" class="skip-link">Aller au contenu</a>
+
+<!-- Barre de progression de lecture -->
+<div class="barre-lecture" id="barreProgression" role="progressbar" aria-label="Progression de lecture" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- ================================================================
+     HERO — SCÈNE D'OUVERTURE
+================================================================ -->
+<section class="hero" aria-labelledby="titre-principal">
+
+  <!-- Particules dorées flottantes -->
+  <div class="hero-particules" aria-hidden="true">
+    <span class="particule" style="--duree:9s;  --delai:0s;   left:8%;"></span>
+    <span class="particule" style="--duree:12s; --delai:1.2s; left:18%;"></span>
+    <span class="particule" style="--duree:7s;  --delai:2.5s; left:28%;"></span>
+    <span class="particule" style="--duree:11s; --delai:0.5s; left:42%;"></span>
+    <span class="particule" style="--duree:8s;  --delai:3.1s; left:55%;"></span>
+    <span class="particule" style="--duree:14s; --delai:1.8s; left:67%;"></span>
+    <span class="particule" style="--duree:9s;  --delai:0.9s; left:78%;"></span>
+    <span class="particule" style="--duree:10s; --delai:2.2s; left:88%;"></span>
+    <span class="particule" style="--duree:13s; --delai:4s;   left:95%;"></span>
+  </div>
+
+  <div class="hero-cadre">
+    <!-- Coins décoratifs -->
+    <svg class="coin coin-tl" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <path d="M0 40 L0 0 L40 0" stroke="#C9A84C" stroke-width="1" fill="none"/>
+      <path d="M8 32 L8 8 L32 8" stroke="#C9A84C" stroke-width="0.5" fill="none" opacity="0.5"/>
+      <circle cx="6" cy="6" r="2" fill="#C9A84C" opacity="0.6"/>
+    </svg>
+    <svg class="coin coin-tr" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <path d="M0 40 L0 0 L40 0" stroke="#C9A84C" stroke-width="1" fill="none"/>
+      <path d="M8 32 L8 8 L32 8" stroke="#C9A84C" stroke-width="0.5" fill="none" opacity="0.5"/>
+      <circle cx="6" cy="6" r="2" fill="#C9A84C" opacity="0.6"/>
+    </svg>
+    <svg class="coin coin-bl" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <path d="M0 40 L0 0 L40 0" stroke="#C9A84C" stroke-width="1" fill="none"/>
+      <path d="M8 32 L8 8 L32 8" stroke="#C9A84C" stroke-width="0.5" fill="none" opacity="0.5"/>
+      <circle cx="6" cy="6" r="2" fill="#C9A84C" opacity="0.6"/>
+    </svg>
+    <svg class="coin coin-br" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <path d="M0 40 L0 0 L40 0" stroke="#C9A84C" stroke-width="1" fill="none"/>
+      <path d="M8 32 L8 8 L32 8" stroke="#C9A84C" stroke-width="0.5" fill="none" opacity="0.5"/>
+      <circle cx="6" cy="6" r="2" fill="#C9A84C" opacity="0.6"/>
+    </svg>
+
+    <p class="hero-festival">Festival de l'IA · Hauts-de-France · Semaine du 13 au 19 juin 2026</p>
+
+    <!-- Ornement central -->
+    <svg width="120" height="20" viewBox="0 0 120 20" class="ornement-svg" style="margin-bottom:1.5rem;" aria-hidden="true" focusable="false">
+      <line x1="0"  y1="10" x2="45"  y2="10" stroke="#C9A84C" stroke-width="0.5" opacity="0.6"/>
+      <path d="M50 10 L55 5 L60 10 L55 15 Z" fill="none" stroke="#C9A84C" stroke-width="0.8"/>
+      <circle cx="60" cy="10" r="1.5" fill="#C9A84C" opacity="0.8"/>
+      <path d="M60 10 L65 5 L70 10 L65 15 Z" fill="none" stroke="#C9A84C" stroke-width="0.8"/>
+      <line x1="75" y1="10" x2="120" y2="10" stroke="#C9A84C" stroke-width="0.5" opacity="0.6"/>
+    </svg>
+
+    <h1 id="titre-principal" class="hero-titre">L'IA Crée&#8202;—<br>Mais Qui Décide&nbsp;?</h1>
+    <img src="assets/watteau.png" alt="Détail d'une œuvre d'Antoine Watteau montrant des personnages dans un jardin" class="hero-image" width="100%>
+    <p class="hero-accroche">
+      Illustration créée par Gemini, un modèle d'IA générative de Google, à partir d'une description textuelle inspirée du style d'Antoine Watteau.
+    </p>
+    <h2 class="hero-sous-titre">Exposition Interactive et Participative</h2>
+
+    <svg width="80" height="12" viewBox="0 0 80 12" class="ornement-svg" style="margin: 0.5rem auto 1.5rem;" aria-hidden="true" focusable="false">
+      <line x1="0"  y1="6" x2="30" y2="6" stroke="#C9A84C" stroke-width="0.5" opacity="0.4"/>
+      <path d="M33 6 L36 3 L39 6 L36 9 Z" fill="#C9A84C" opacity="0.5"/>
+      <line x1="41" y1="6" x2="80" y2="6" stroke="#C9A84C" stroke-width="0.5" opacity="0.4"/>
+    </svg>
+
+    <p class="hero-desc">
+      Six stands immersifs, conçus et animés par les élèves de Première NSI,
+      explorent la créativité de l'intelligence artificielle à travers l'image,
+      le texte et la musique — et interrogent le rôle du jugement humain.
+    </p>
+
+    <div class="hero-meta" aria-label="Informations sur l'événement">
+      <span>Lycée Antoine Watteau · Valenciennes</span>
+      <span>Première NSI</span>
+      <span>Entrée libre</span>
+    </div>
+  </div>
+
+  <div class="scroll-cta" aria-hidden="true">
+    <span>Découvrir</span>
+    <div class="scroll-fleche"></div>
+  </div>
+</section>
+
+<!-- ================================================================
+     INTRODUCTION PÉDAGOGIQUE
+================================================================ -->
+<main id="contenu-principal">
+<section class="intro-section fade-up" aria-labelledby="titre-intro">
+  <p class="section-label">À propos de l'exposition</p>
+  <p id="titre-intro" class="intro-texte">
+    Dans le sillage des <em>fêtes galantes</em> d'Antoine Watteau,
+    où la frontière entre la nature et l'artifice, entre le jeu et le sérieux,
+    restait délicieusement floue — cette exposition invite chacun à
+    <strong>interroger la frontière entre création humaine et génération artificielle</strong>.
+    Les élèves de Première NSI endossent ici le rôle des experts.
+    Vous êtes le jury.
+  </p>
+</section>
+
+<!-- Trois piliers -->
+<div class="piliers" role="list">
+  <div class="pilier fade-up" role="listitem">
+    <p class="pilier-titre">Expérimenter</p>
+    <p class="pilier-desc">Chaque stand propose une interaction directe : tester, comparer, voter.</p>
+  </div>
+  <div class="pilier fade-up" role="listitem">
+    <p class="pilier-titre">Comprendre</p>
+    <p class="pilier-desc">Les élèves expliquent comment l'IA fonctionne — sans jargon inutile.</p>
+  </div>
+  <div class="pilier fade-up" role="listitem">
+    <p class="pilier-titre">Décider</p>
+    <p class="pilier-desc">Droits d'auteur, biais, authenticité : forgez votre propre opinion.</p>
+  </div>
+</div>
+
+<div class="separateur" role="presentation" aria-hidden="true">
+  <div class="sep-ligne"></div>
+  <span class="sep-motif">* * *</span>
+  <div class="sep-ligne"></div>
+</div>
+
+<!-- ================================================================
+     STANDS
+================================================================ -->
+<section class="stands-section" aria-labelledby="titre-stands">
+  <div class="stands-header fade-up">
+    <p class="section-label">La Galerie</p>
+    <h2 id="titre-stands" class="stands-titre">Les Six Stands de l'Exposition</h2>
+    <p class="stands-sous">Sélectionnez un stand pour découvrir le déroulé pédagogique complet.</p>
+  </div>
+
+  <div class="stands-grille">
+
+    <!-- STAND A — IMAGE -->
+    <article class="stand-carte fade-up" data-stand="A" aria-labelledby="stand-a-titre">
+      <div class="stand-bande" aria-hidden="true"></div>
+      <div class="stand-corps">
+        <div class="stand-entete">
+          <div class="stand-badge" aria-hidden="true">A</div>
+          <div class="stand-etiquette">
+            <p class="stand-numero">Stand A · Image</p>
+            <h3 id="stand-a-titre" class="stand-titre">Watteau contre l'IA</h3>
+          </div>
+        </div>
+        <div class="stand-colonnes">
+          <div class="stand-col">
+            <p class="stand-col-label">L'IA génère</p>
+            <p class="stand-col-texte">Des tableaux dans le style rococo d'Antoine Watteau — figures élégantes, jardins, lumière dorée.</p>
+          </div>
+          <div class="stand-col">
+            <p class="stand-col-label">Le visiteur</p>
+            <p class="stand-col-texte">Compare avec les vraies oeuvres du maître et tente de distinguer l'original de l'imitation.</p>
+          </div>
+        </div>
+        <div class="stand-nsi">
+          <p class="stand-nsi-label">Notions NSI mobilisées</p>
+          <div class="stand-nsi-tags">
+            <span class="tag">API REST</span>
+            <span class="tag">Requêtes HTTP</span>
+            <span class="tag">JSON</span>
+            <span class="tag">Données images</span>
+          </div>
+        </div>
+        <button class="stand-toggle"
+                onclick="basculerDetail(this)"
+                aria-expanded="false"
+                aria-controls="detail-a">
+          Voir le déroulé pédagogique
+        </button>
+      </div>
+      <div class="stand-detail" id="detail-a" role="region" aria-label="Déroulé du stand A">
+        <div class="detail-section">
+          <p class="detail-titre">Déroulé du stand (15 min)</p>
+          <ul class="detail-liste">
+            <li>L'élève animateur présente huit images sur l'écran : quatre vraies oeuvres de Watteau et quatre générées par l'IA via un script Python utilisant l'API OpenAI Images, hébergée côté serveur.</li>
+            <li>Les visiteurs votent sur une feuille ou via un formulaire numérique ; les résultats sont affichés en direct.</li>
+            <li>Révélation : les réponses sont dévoilées et le taux de réussite affiché.</li>
+            <li>Discussion guidée : qu'est-ce qui trahit l'IA ? Qu'est-ce que le « style » ?</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Questions de réflexion</p>
+          <div class="detail-question">Si l'IA reproduit parfaitement le style de Watteau, qui est l'auteur de l'image ?</div>
+          <div class="detail-question">Peut-on déposer un copyright sur un tableau généré par IA ?</div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Outils techniques</p>
+          <div class="detail-outils">
+            <span class="outil-badge">Python 3</span>
+            <span class="outil-badge">API OpenAI Images (relais serveur)</span>
+            <span class="outil-badge">Requests</span>
+            <span class="outil-badge">Interface HTML</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- STAND B — TEXTE -->
+    <article class="stand-carte fade-up" data-stand="B" aria-labelledby="stand-b-titre">
+      <div class="stand-bande" aria-hidden="true"></div>
+      <div class="stand-corps">
+        <div class="stand-entete">
+          <div class="stand-badge" aria-hidden="true">B</div>
+          <div class="stand-etiquette">
+            <p class="stand-numero">Stand B · Texte</p>
+            <h3 id="stand-b-titre" class="stand-titre">Le Poème Impossible</h3>
+          </div>
+        </div>
+        <div class="stand-colonnes">
+          <div class="stand-col">
+            <p class="stand-col-label">L'IA génère</p>
+            <p class="stand-col-texte">Des poèmes sur Valenciennes, le lycée Watteau, la jeunesse — en alexandrins, haïkus, vers libres.</p>
+          </div>
+          <div class="stand-col">
+            <p class="stand-col-label">Le visiteur</p>
+            <p class="stand-col-texte">Évalue chaque poème selon trois critères : émotion ressentie, authenticité perçue, originalité.</p>
+          </div>
+        </div>
+        <div class="stand-nsi">
+          <p class="stand-nsi-label">Notions NSI mobilisées</p>
+          <div class="stand-nsi-tags">
+            <span class="tag">API LLM</span>
+            <span class="tag">Ingénierie du prompt</span>
+            <span class="tag">Chaînes de caractères</span>
+            <span class="tag">Collecte de données</span>
+          </div>
+        </div>
+        <button class="stand-toggle"
+                onclick="basculerDetail(this)"
+                aria-expanded="false"
+                aria-controls="detail-b">
+          Voir le déroulé pédagogique
+        </button>
+      </div>
+      <div class="stand-detail" id="detail-b" role="region" aria-label="Déroulé du stand B">
+        <div class="detail-section">
+          <p class="detail-titre">Déroulé du stand (15 min)</p>
+          <ul class="detail-liste">
+            <li>Le visiteur soumet un thème ou un mot-clé (par exemple : « le beffroi », « un dimanche matin », son prénom).</li>
+            <li>L'élève animateur génère en direct un poème via l'API Claude ou GPT, en montrant le prompt utilisé. L'appel passe par un relais serveur local — aucune clé API n'est exposée dans le navigateur.</li>
+            <li>Le visiteur note le poème sur cinq étoiles selon trois critères : émotion, authenticité, originalité.</li>
+            <li>Un poème écrit par un être humain sur le même thème est ensuite présenté pour comparaison.</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Questions de réflexion</p>
+          <div class="detail-question">Un poème peut-il toucher si son auteur n'a jamais rien ressenti ?</div>
+          <div class="detail-question">Le prompt que j'écris fait-il de moi le co-auteur du poème ?</div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Outils techniques</p>
+          <div class="detail-outils">
+            <span class="outil-badge">Python 3</span>
+            <span class="outil-badge">API Claude / GPT (relais serveur)</span>
+            <span class="outil-badge">Interface HTML</span>
+            <span class="outil-badge">CSV de résultats</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- STAND C — MUSIQUE -->
+    <article class="stand-carte fade-up" data-stand="C" aria-labelledby="stand-c-titre">
+      <div class="stand-bande" aria-hidden="true"></div>
+      <div class="stand-corps">
+        <div class="stand-entete">
+          <div class="stand-badge" aria-hidden="true">C</div>
+          <div class="stand-etiquette">
+            <p class="stand-numero">Stand C · Musique</p>
+            <h3 id="stand-c-titre" class="stand-titre">Qui a Composé Cela&nbsp;?</h3>
+          </div>
+        </div>
+        <div class="stand-colonnes">
+          <div class="stand-col">
+            <p class="stand-col-label">L'IA génère</p>
+            <p class="stand-col-texte">Des mélodies courtes au clavecin, dans le style baroque du XVIII<sup>e</sup> siècle — l'époque de Watteau.</p>
+          </div>
+          <div class="stand-col">
+            <p class="stand-col-label">Le visiteur</p>
+            <p class="stand-col-texte">Un test d'écoute à l'aveugle : parmi six extraits, lesquels sont de Couperin ou de Rameau ? Lesquels sont générés ?</p>
+          </div>
+        </div>
+        <div class="stand-nsi">
+          <p class="stand-nsi-label">Notions NSI mobilisées</p>
+          <div class="stand-nsi-tags">
+            <span class="tag">Données audio</span>
+            <span class="tag">API musicale</span>
+            <span class="tag">Fichiers binaires</span>
+            <span class="tag">Randomisation</span>
+          </div>
+        </div>
+        <button class="stand-toggle"
+                onclick="basculerDetail(this)"
+                aria-expanded="false"
+                aria-controls="detail-c">
+          Voir le déroulé pédagogique
+        </button>
+      </div>
+      <div class="stand-detail" id="detail-c" role="region" aria-label="Déroulé du stand C">
+        <div class="detail-section">
+          <p class="detail-titre">Déroulé du stand (15 min)</p>
+          <ul class="detail-liste">
+            <li>Six extraits de trente secondes sont joués depuis un Raspberry Pi branché à un haut-parleur.</li>
+            <li>Trois extraits sont de vrais morceaux baroques (Couperin, Rameau, Bach) ; trois sont générés par Suno AI ou MusicGen.</li>
+            <li>Le visiteur inscrit ses paris sur un bulletin. Les résultats sont révélés à la fin.</li>
+            <li>Discussion : la « qualité » musicale suffit-elle à définir l'oeuvre d'art ?</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Questions de réflexion</p>
+          <div class="detail-question">Si une mélodie générée provoque de l'émotion, est-elle de l'art ?</div>
+          <div class="detail-question">Les compositeurs baroques suivaient des règles strictes — en quoi l'IA diffère-t-elle ?</div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Outils techniques</p>
+          <div class="detail-outils">
+            <span class="outil-badge">Raspberry Pi</span>
+            <span class="outil-badge">Suno AI / MusicGen</span>
+            <span class="outil-badge">Pygame</span>
+            <span class="outil-badge">Fichiers MP3</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- STAND D — PORTRAIT (RGPD) -->
+    <article class="stand-carte fade-up" data-stand="D" aria-labelledby="stand-d-titre">
+      <div class="stand-bande" aria-hidden="true"></div>
+      <div class="stand-corps">
+        <div class="stand-entete">
+          <div class="stand-badge" aria-hidden="true">D</div>
+          <div class="stand-etiquette">
+            <p class="stand-numero">Stand D · Portrait</p>
+            <h3 id="stand-d-titre" class="stand-titre">Mon Portrait en Dix Styles</h3>
+          </div>
+        </div>
+        <div class="stand-colonnes">
+          <div class="stand-col">
+            <p class="stand-col-label">L'IA génère</p>
+            <p class="stand-col-texte">Le portrait du visiteur transposé dans dix styles artistiques différents : rococo, manga, cubisme, art pixel…</p>
+          </div>
+          <div class="stand-col">
+            <p class="stand-col-label">Le visiteur</p>
+            <p class="stand-col-texte">Choisit son portrait préféré, puis discute de ce que chaque style révèle — ou efface — de son identité.</p>
+          </div>
+        </div>
+        <div class="stand-nsi">
+          <p class="stand-nsi-label">Notions NSI mobilisées</p>
+          <div class="stand-nsi-tags">
+            <span class="tag">Images numériques</span>
+            <span class="tag">API génération</span>
+            <span class="tag">Raspberry Pi</span>
+            <span class="tag">Vie privée / RGPD</span>
+          </div>
+        </div>
+        <button class="stand-toggle"
+                onclick="basculerDetail(this)"
+                aria-expanded="false"
+                aria-controls="detail-d">
+          Voir le déroulé pédagogique
+        </button>
+      </div>
+      <div class="stand-detail" id="detail-d" role="region" aria-label="Déroulé du stand D">
+
+        <!-- Encadré RGPD obligatoire -->
+        <div class="bandeau-rgpd" role="note" aria-label="Avertissement RGPD">
+          <strong>Conformité RGPD — Données biométriques</strong>
+          Ce stand collecte des photographies de visage, qualifiées de données biométriques au sens du RGPD. Le protocole suivant est obligatoire : (1) le consentement explicite et libre du visiteur est recueilli avant toute prise de vue ; (2) les personnes mineures doivent disposer de l'accord d'un responsable légal présent ; (3) la photographie est supprimée définitivement à l'issue de la session, sous les yeux du visiteur ; (4) aucune image n'est conservée, transmise ou réutilisée. Ces étapes font partie intégrante du déroulé pédagogique et illustrent concrètement les enjeux du RGPD.
+        </div>
+
+        <div class="detail-section">
+          <p class="detail-titre">Déroulé du stand (20 min)</p>
+          <ul class="detail-liste">
+            <li>L'élève présente le cadre RGPD et recueille le consentement écrit du visiteur avant toute action.</li>
+            <li>Le visiteur accepte (ou refuse librement) d'être photographié sur fond neutre avec le Raspberry Pi équipé d'une caméra.</li>
+            <li>Un script Python transmet la photographie à l'API de génération via un relais serveur local, avec dix prompts de style différents.</li>
+            <li>Les dix portraits s'affichent sur l'écran en quelques secondes. Le visiteur choisit son préféré.</li>
+            <li>L'élève supprime la photographie originale en direct, à la vue du visiteur, et explique pourquoi cette étape est légalement requise.</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Questions de réflexion</p>
+          <div class="detail-question">Lorsque l'IA transforme mon visage, est-ce encore moi sur l'image ?</div>
+          <div class="detail-question">Que deviennent les données biométriques utilisées pour entraîner ces modèles ?</div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Outils techniques</p>
+          <div class="detail-outils">
+            <span class="outil-badge">Raspberry Pi 5</span>
+            <span class="outil-badge">Caméra Pi</span>
+            <span class="outil-badge">API OpenAI Images (relais serveur)</span>
+            <span class="outil-badge">Python / Pillow</span>
+            <span class="outil-badge">Écran HDMI</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- STAND E — FIABILITÉ -->
+    <article class="stand-carte fade-up" data-stand="E" aria-labelledby="stand-e-titre">
+      <div class="stand-bande" aria-hidden="true"></div>
+      <div class="stand-corps">
+        <div class="stand-entete">
+          <div class="stand-badge" aria-hidden="true">E</div>
+          <div class="stand-etiquette">
+            <p class="stand-numero">Stand E · Fiabilité</p>
+            <h3 id="stand-e-titre" class="stand-titre">L'IA Hallucine</h3>
+          </div>
+        </div>
+        <div class="stand-colonnes">
+          <div class="stand-col">
+            <p class="stand-col-label">L'IA génère</p>
+            <p class="stand-col-texte">Des « informations » sur Valenciennes, le lycée Watteau, des personnages historiques — dont certaines sont délibérément fausses.</p>
+          </div>
+          <div class="stand-col">
+            <p class="stand-col-label">Le visiteur</p>
+            <p class="stand-col-texte">Doit repérer les erreurs, les inventions, les confabulations — et comprendre pourquoi l'IA les produit.</p>
+          </div>
+        </div>
+        <div class="stand-nsi">
+          <p class="stand-nsi-label">Notions NSI mobilisées</p>
+          <div class="stand-nsi-tags">
+            <span class="tag">Modèles de langage</span>
+            <span class="tag">Probabilités</span>
+            <span class="tag">Données d'entraînement</span>
+            <span class="tag">Vérification des sources</span>
+          </div>
+        </div>
+        <button class="stand-toggle"
+                onclick="basculerDetail(this)"
+                aria-expanded="false"
+                aria-controls="detail-e">
+          Voir le déroulé pédagogique
+        </button>
+      </div>
+      <div class="stand-detail" id="detail-e" role="region" aria-label="Déroulé du stand E">
+        <div class="detail-section">
+          <p class="detail-titre">Note pédagogique — Fiches simulées</p>
+          <div class="bandeau-rgpd" role="note">
+            <strong>Avertissement éditorial</strong>
+            Toutes les fiches présentant des informations erronées portent la mention visible « DOCUMENT PÉDAGOGIQUE SIMULÉ — À NE PAS DIFFUSER » afin d'éviter toute confusion hors du contexte du stand. Cette précaution fait partie intégrante du protocole.
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Déroulé du stand (15 min)</p>
+          <ul class="detail-liste">
+            <li>Cinq fiches d'information sont présentées sur des thèmes locaux ou historiques. Deux contiennent des erreurs fabriquées par l'IA, clairement marquées « simulation pédagogique ».</li>
+            <li>Le visiteur identifie les fiches suspectes, sans aide extérieure dans un premier temps.</li>
+            <li>L'élève explique le mécanisme de l'hallucination : l'IA prédit des tokens vraisemblables, non des faits vérifiés.</li>
+            <li>Démonstration en direct : la même question est posée à l'IA et sa réponse — correcte ou inventée — est analysée.</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Questions de réflexion</p>
+          <div class="detail-question">Peut-on faire confiance à un outil qui ne « sait » pas qu'il se trompe ?</div>
+          <div class="detail-question">Comment vérifier rapidement une information générée par IA ?</div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Outils techniques</p>
+          <div class="detail-outils">
+            <span class="outil-badge">Claude / GPT</span>
+            <span class="outil-badge">HTML statique</span>
+            <span class="outil-badge">Fiches imprimées</span>
+            <span class="outil-badge">Vidéoprojecteur</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- STAND F — ÉCRITURE -->
+    <article class="stand-carte fade-up" data-stand="F" aria-labelledby="stand-f-titre">
+      <div class="stand-bande" aria-hidden="true"></div>
+      <div class="stand-corps">
+        <div class="stand-entete">
+          <div class="stand-badge" aria-hidden="true">F</div>
+          <div class="stand-etiquette">
+            <p class="stand-numero">Stand F · Écriture</p>
+            <h3 id="stand-f-titre" class="stand-titre">Écris avec Moi</h3>
+          </div>
+        </div>
+        <div class="stand-colonnes">
+          <div class="stand-col">
+            <p class="stand-col-label">L'IA propose</p>
+            <p class="stand-col-texte">Un début de récit — une scène dans les jardins de Versailles, un matin de juin 1715.</p>
+          </div>
+          <div class="stand-col">
+            <p class="stand-col-label">Le visiteur</p>
+            <p class="stand-col-texte">Continue l'histoire à tour de rôle avec l'IA, en alternant les paragraphes. Le résultat s'affiche en direct.</p>
+          </div>
+        </div>
+        <div class="stand-nsi">
+          <p class="stand-nsi-label">Notions NSI mobilisées</p>
+          <div class="stand-nsi-tags">
+            <span class="tag">Conversation multi-tour</span>
+            <span class="tag">Contexte API</span>
+            <span class="tag">Interface web</span>
+            <span class="tag">Co-création</span>
+          </div>
+        </div>
+        <button class="stand-toggle"
+                onclick="basculerDetail(this)"
+                aria-expanded="false"
+                aria-controls="detail-f">
+          Voir le déroulé pédagogique
+        </button>
+      </div>
+      <div class="stand-detail" id="detail-f" role="region" aria-label="Déroulé du stand F">
+        <div class="detail-section">
+          <p class="detail-titre">Déroulé du stand (20 min)</p>
+          <ul class="detail-liste">
+            <li>L'interface affiche le début du récit sur l'écran partagé. Le visiteur saisit son paragraphe de suite.</li>
+            <li>L'IA répond automatiquement via un relais serveur local. L'alternance se poursuit jusqu'à six tours (trois humains, trois IA).</li>
+            <li>Le récit complet est imprimé sur une carte souvenir ou transmis par courriel si le visiteur le souhaite.</li>
+            <li>L'élève montre le prompt système qui oriente l'IA pour demeurer dans le registre de l'époque.</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Questions de réflexion</p>
+          <div class="detail-question">Qui est l'auteur de l'histoire finale — moi, l'IA, ou les deux ?</div>
+          <div class="detail-question">L'IA a-t-elle modifié ma façon d'écrire en s'y adaptant ?</div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-titre">Outils techniques</p>
+          <div class="detail-outils">
+            <span class="outil-badge">API Claude (relais serveur)</span>
+            <span class="outil-badge">Interface HTML/JS</span>
+            <span class="outil-badge">Historique de messages</span>
+            <span class="outil-badge">Impression thermique</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div><!-- fin de la grille des stands -->
+</section>
+
+<div class="separateur" role="presentation" aria-hidden="true">
+  <div class="sep-ligne"></div>
+  <span class="sep-motif">* * *</span>
+  <div class="sep-ligne"></div>
+</div>
+
+<!-- ================================================================
+     COMPÉTENCES NSI
+================================================================ -->
+<section class="competences-section" aria-labelledby="titre-competences">
+  <div style="text-align:center;" class="fade-up">
+    <p class="section-label">Ancrage Curriculaire</p>
+    <h2 id="titre-competences" class="stands-titre" style="color:var(--or-pale); font-family:'IM Fell English',serif; font-style:italic; font-size:clamp(1.6rem,3.5vw,2.2rem); margin:0.5rem 0;">
+      Compétences NSI de Première Mobilisées
+    </h2>
+    <p class="stands-sous">Chaque stand est un projet concret ancré dans le programme officiel.</p>
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-carte fade-up">
+      <p class="comp-theme">Représentation des données</p>
+      <ul class="comp-liste">
+        <li>Encodage des images (pixels, RVB, formats)</li>
+        <li>Représentation des données audio (fréquence, échantillonnage)</li>
+        <li>Données textuelles et encodage Unicode</li>
+        <li>Formats d'échange JSON et CSV</li>
+      </ul>
+    </div>
+    <div class="comp-carte fade-up">
+      <p class="comp-theme">Algorithmique et Programmation</p>
+      <ul class="comp-liste">
+        <li>Fonctions et modules Python</li>
+        <li>Traitement de chaînes de caractères</li>
+        <li>Gestion de fichiers et de données</li>
+        <li>Appels asynchrones et gestion d'erreurs</li>
+      </ul>
+    </div>
+    <div class="comp-carte fade-up">
+      <p class="comp-theme">Web et Interactions</p>
+      <ul class="comp-liste">
+        <li>Requêtes HTTP (GET / POST)</li>
+        <li>Utilisation d'API REST avec clés d'accès</li>
+        <li>HTML, CSS et JavaScript pour les interfaces</li>
+        <li>Collecte et affichage de données en temps réel</li>
+      </ul>
+    </div>
+    <div class="comp-carte fade-up">
+      <p class="comp-theme">Société et Numérique</p>
+      <ul class="comp-liste">
+        <li>Propriété intellectuelle et droits d'auteur</li>
+        <li>Protection des données personnelles (RGPD)</li>
+        <li>Biais algorithmiques et représentativité</li>
+        <li>Fiabilité des sources et vérification de l'information</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="separateur" role="presentation" aria-hidden="true">
+  <div class="sep-ligne"></div>
+  <span class="sep-motif">* * *</span>
+  <div class="sep-ligne"></div>
+</div>
+
+<!-- ================================================================
+     RÉTROPLANNING
+================================================================ -->
+<section class="planning-section" aria-labelledby="titre-planning">
+  <div class="planning-header fade-up">
+    <p class="section-label">Organisation</p>
+    <h2 id="titre-planning" class="planning-titre">Rétroplanning du Projet</h2>
+  </div>
+
+  <ol class="timeline" aria-label="Étapes du projet">
+    <li class="timeline-item fade-up">
+      <p class="timeline-date">Fin avril — Mai 2026</p>
+      <p class="timeline-titre">Constitution des équipes et soumission du dossier</p>
+      <p class="timeline-desc">Répartition des binômes par stand. Soumission du dossier sur ia-avecnous.fr. Première prise en main des outils.</p>
+    </li>
+    <li class="timeline-item fade-up">
+      <p class="timeline-date">Mai 2026</p>
+      <p class="timeline-titre">Développement des scripts et des interfaces</p>
+      <p class="timeline-desc">Chaque binôme développe son script Python et son interface d'affichage. Séances de travail encadrées en salle NSI. Mise en place des relais serveur pour les appels API.</p>
+    </li>
+    <li class="timeline-item fade-up">
+      <p class="timeline-date">Première semaine de juin 2026</p>
+      <p class="timeline-titre">Répétition générale et préparation matérielle</p>
+      <p class="timeline-desc">Test complet de tous les stands. Impression des affiches. Installation et configuration du matériel (Raspberry Pi, écrans, haut-parleurs). Vérification des protocoles RGPD.</p>
+    </li>
+    <li class="timeline-item fade-up">
+      <p class="timeline-date">13 — 19 juin 2026</p>
+      <p class="timeline-titre">Semaine de l'IA — Exposition ouverte</p>
+      <p class="timeline-desc">Exposition accessible à l'ensemble de la communauté scolaire. Rotation des créneaux d'animation entre binômes. Collecte des votes et retours visiteurs.</p>
+    </li>
+  </ol>
+</section>
+</main>
+
+<!-- ================================================================
+     PIED DE PAGE
+================================================================ -->
+<footer>
+  <svg width="80" height="12" viewBox="0 0 80 12" class="ornement-svg" style="margin-bottom:1.5rem; opacity:0.4;" aria-hidden="true" focusable="false">
+    <line x1="0"  y1="6" x2="30" y2="6" stroke="#C9A84C" stroke-width="0.5"/>
+    <path d="M33 6 L36 3 L39 6 L36 9 Z" fill="#C9A84C" opacity="0.6"/>
+    <line x1="41" y1="6" x2="80" y2="6" stroke="#C9A84C" stroke-width="0.5"/>
+  </svg>
+  <p class="footer-lycee">
+    Lycée Antoine Watteau — Valenciennes
+    &ensp;·&ensp;
+    Élèves de Première NSI
+    &ensp;·&ensp;
+    Semaine de l'IA · Festival Hauts-de-France · Juin 2026
+  </p>
+</footer>
+
+<script>
+/* ================================================================
+   DÉPLOIEMENT DES STANDS
+================================================================ */
+function basculerDetail(bouton) {
+  const carte  = bouton.closest('.stand-carte');
+  const detail = carte.querySelector('.stand-detail');
+  const estOuvert = detail.classList.contains('ouvert');
+
+  /* Ferme tous les panneaux ouverts */
+  document.querySelectorAll('.stand-detail.ouvert').forEach(d => {
+    d.classList.remove('ouvert');
+    const btn = d.closest('.stand-carte').querySelector('.stand-toggle');
+    btn.textContent  = 'Voir le déroulé pédagogique';
+    btn.setAttribute('aria-expanded', 'false');
+  });
+
+  /* Ouvre le panneau ciblé si besoin */
+  if (!estOuvert) {
+    detail.classList.add('ouvert');
+    bouton.textContent = 'Masquer le déroulé pédagogique';
+    bouton.setAttribute('aria-expanded', 'true');
+    setTimeout(() => {
+      carte.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 120);
+  }
+}
+
+/* ================================================================
+   ANIMATIONS AU DÉFILEMENT — IntersectionObserver
+================================================================ */
+const observateur = new IntersectionObserver((entrees) => {
+  entrees.forEach((entree, i) => {
+    if (entree.isIntersecting) {
+      setTimeout(() => {
+        entree.target.classList.add('visible');
+      }, i * 80);
+      observateur.unobserve(entree.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-up').forEach(el => observateur.observe(el));
+
+/* ================================================================
+   BARRE DE PROGRESSION DE LECTURE
+================================================================ */
+const barre = document.getElementById('barreProgression');
+
+function mettreAJourProgression() {
+  const defilement  = window.scrollY;
+  const hauteurPage = document.body.scrollHeight - window.innerHeight;
+  const progression = hauteurPage > 0 ? defilement / hauteurPage : 0;
+  barre.style.transform = `scaleX(${progression})`;
+  barre.setAttribute('aria-valuenow', Math.round(progression * 100));
+}
+
+window.addEventListener('scroll', mettreAJourProgression, { passive: true });
+
+/* ================================================================
+   EFFET DE RELIEF (TILT) AU SURVOL DES CARTES
+================================================================ */
+document.querySelectorAll('.stand-carte').forEach(carte => {
+  carte.addEventListener('mousemove', (e) => {
+    const rect = carte.getBoundingClientRect();
+    const cx   = rect.left + rect.width  / 2;
+    const cy   = rect.top  + rect.height / 2;
+    const dx   = (e.clientX - cx) / rect.width;
+    const dy   = (e.clientY - cy) / rect.height;
+    const rx   = dy * 6;   /* rotation X : ±6° */
+    const ry   = -dx * 6;  /* rotation Y : ±6° */
+    carte.style.transform =
+      `translateY(-6px) perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+
+  carte.addEventListener('mouseleave', () => {
+    carte.style.transform = '';
+    carte.style.transition = 'transform 0.55s cubic-bezier(0.16,1,0.3,1)';
+  });
+
+  carte.addEventListener('mouseenter', () => {
+    carte.style.transition = 'transform 0.15s ease';
+  });
+});
+</script>
+</body>
+</html>
