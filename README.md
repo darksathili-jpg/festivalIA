@@ -34,7 +34,7 @@ Chaque stand est tenu par un **binôme d'élèves** qui guide les visiteurs et a
 
 ```
 .
-├── exposition_ia_watteau.html   # Page web de présentation de l'exposition
+├── index.html                   # Page web de présentation de l'exposition
 ├── stands/
 │   ├── stand_a/                 # Scripts et interfaces — Création visuelle
 │   ├── stand_b/                 # Scripts et interfaces — Poésie
