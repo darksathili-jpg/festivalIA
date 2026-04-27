@@ -1,5 +1,7 @@
 # L'IA Crée — Mais Qui Décide ?
 
+<img src="assets/watteau.png" width=50%>
+
 > Exposition interactive et participative — Lycée Antoine Watteau, Valenciennes  
 > Semaine de l'IA · Festival Hauts-de-France · **13–19 juin 2026**
 
